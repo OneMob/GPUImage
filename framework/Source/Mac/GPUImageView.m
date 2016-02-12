@@ -171,9 +171,13 @@
     _sizeInPixels = viewSize;
 
     [self recalculateViewGeometry];
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [self newFrameReadyAtTime:kCMTimeInvalid atIndex:0];
-    });
+    
+    /*
+     ACE: disabled this to fix the resize bug
+     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+     [self newFrameReadyAtTime:kCMTimeInvalid atIndex:0];
+     });
+     */
 }
 
 #pragma mark -
