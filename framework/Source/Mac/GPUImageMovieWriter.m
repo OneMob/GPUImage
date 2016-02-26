@@ -292,22 +292,16 @@ NSString *const kGPUImageColorSwizzlingFragmentShaderString = SHADER_STRING
     runOnMainQueueWithoutDeadlocking(^{
         [assetWriterVideoInput markAsFinished];
         [assetWriterAudioInput markAsFinished];
-#if (!defined(__IPHONE_6_0) || (__IPHONE_OS_VERSION_MAX_ALLOWED < __IPHONE_6_0))
-        // Not iOS 6 SDK
-        [assetWriter finishWriting];
-        if (handler) handler();
-#else
-        // iOS 6 SDK
-        if ([assetWriter respondsToSelector:@selector(finishWritingWithCompletionHandler:)]) {
-            // Running iOS 6
-            [assetWriter finishWritingWithCompletionHandler:(handler ?: ^{ })];
-        }
-        else {
-            // Not running iOS 6
-            [assetWriter finishWriting];
-            if (handler) handler();
-        }
-#endif
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            [assetWriter finishWritingWithCompletionHandler:^{
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (handler) {
+                        handler();
+                    }
+                });
+            }];
+        });
     });
 }
 
