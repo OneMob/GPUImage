@@ -97,8 +97,8 @@ NSString *const kGPUImageColorSwizzlingFragmentShaderString = SHADER_STRING
     previousAudioTime = kCMTimeNegativeInfinity;
     inputRotation = kGPUImageNoRotation;
     
-    _movieWriterContext = [[GPUImageContext alloc] init];
-    [_movieWriterContext useSharegroup:[[[GPUImageContext sharedImageProcessingContext] context] sharegroup]];
+    _movieWriterContext = [GPUImageContext sharedImageProcessingContext];
+    //[_movieWriterContext useSharegroup:[[[GPUImageContext sharedImageProcessingContext] context] sharegroup]];
 
     runSynchronouslyOnContextQueue(_movieWriterContext, ^{
         [_movieWriterContext useAsCurrentContext];
@@ -454,7 +454,7 @@ NSString *const kGPUImageColorSwizzlingFragmentShaderString = SHADER_STRING
         }
         
 //        NSLog(@"Recorded audio sample time: %lld, %d, %lld", currentSampleTime.value, currentSampleTime.timescale, currentSampleTime.epoch);
-        void(^write)() = ^() {
+        void(^write)(void) = ^() {
             while( ! assetWriterAudioInput.readyForMoreMediaData && ! _encodingLiveVideo && ! audioEncodingIsFinished ) {
                 NSDate *maxDate = [NSDate dateWithTimeIntervalSinceNow:0.5];
                 //NSLog(@"audio waiting...");
@@ -786,7 +786,7 @@ NSString *const kGPUImageColorSwizzlingFragmentShaderString = SHADER_STRING
             }
         }
         
-        void(^write)() = ^() {
+        void(^write)(void) = ^() {
             while( ! assetWriterVideoInput.readyForMoreMediaData && ! _encodingLiveVideo && ! videoEncodingIsFinished ) {
                 NSDate *maxDate = [NSDate dateWithTimeIntervalSinceNow:0.1];
                 //            NSLog(@"video waiting...");
